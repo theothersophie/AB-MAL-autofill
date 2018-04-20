@@ -1,0 +1,99 @@
+// ==UserScript==
+// @name        Hello World
+// @namespace   um...idk
+// @include     https://animebytes.tv/upload.php#light_novels
+// @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
+// @grant       GM.xmlHttpRequest
+// @grant       unsafeWindow
+// @version     1
+// ==/UserScript==
+//jshint esversion: 6
+
+//Avoid conflicts
+this.$ = this.jQuery = jQuery.noConflict(true);
+
+var malAutofillHtml = `
+<dt>MyAnimeList Autofill</dt>
+<dd>
+    <input id="mal_autofill" size="50" value="" type="text">
+    <input id="mal_autofill_button" value="Autofill!" type="button"><br> The link should look like: https://myanimelist.net/manga/1/Monster<br>
+    <div id="auto_mal"></div>
+</dd>
+`;
+
+function get_myanimelist_id() {
+  var e = $("#mal_autofill").val();
+  if (!e) {
+    return $('input[id="auto_mal"]:visible').text("Hey! You need to give me some information before I can autofill for you!"),
+      0;
+  }
+  var t = /http[s]?:\/\/myanimelist.net\/(manga|anime)\/([0-9]+)/;
+  if (!e.match(t)) {
+    return alert("Invalid MyAnimeList link."),
+      0;
+  }
+  var a = e.match(t)[2];
+  return a;
+}
+
+function autofill_mal() {
+  console.log("autofill called");
+  id = get_myanimelist_id();
+  jikan = "https://api.jikan.moe/";
+  type = "manga";
+  entry = "";
+
+  console.log(id);
+  request_url = jikan + type + "/" + id;
+  console.log(request_url);
+
+  GM.xmlHttpRequest({
+    method: "GET",
+    url: request_url,
+    onload: function(response) {
+
+      console.log([
+        response.status,
+        response.statusText,
+        response.readyState,
+        response.responseHeaders,
+        response.responseText,
+        response.finalUrl,
+      ].join("\n"));
+
+      if (response.status == 200) {
+        jsonResponse = JSON.parse(response.responseText);
+        fill_inputs(jsonResponse);
+      }
+    }
+  });
+
+
+  function fill_inputs(entry) {
+    $("#series_name_light_novels").val(entry.title);
+    $("#series2_light_novels").val(entry.title_japanese);
+    $("#tags_light_novels").val();
+    $("#year_light_novels").val(entry.published.from.slice(0, 4));
+    $("#image_light_novels").val(entry.image_url);
+    if (entry.synopsis.substr(0, 23) == "Looking for information") {
+      $("#desc_light_novels").val('No description.');
+    } else {
+      synopsis = decodeHtml(entry.synopsis);
+      $("#desc_light_novels").val(synopsis);
+    }
+
+    function decodeHtml(html) {
+      var txt = document.createElement("textarea");
+      txt.innerHTML = html;
+      return txt.value;
+    }
+
+  }
+}
+
+$(document).ready(function() {
+
+  $("#light_novels_form .box").prepend(malAutofillHtml);
+  $("#mal_autofill_button").on("click", autofill_mal);
+
+});
