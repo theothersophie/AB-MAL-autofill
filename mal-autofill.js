@@ -5,7 +5,7 @@
 // @include     *animebytes.tv/upload.php*
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant       GM.xmlHttpRequest
-// @version     1
+// @version     2018.04.20
 // ==/UserScript==
 //jshint esversion: 6
 
