@@ -1,10 +1,9 @@
 // ==UserScript==
-// @name        Hello World
+// @name        Sophie's Amazing MAL Autofill
 // @namespace   um...idk
 // @include     https://animebytes.tv/upload.php#light_novels
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant       GM.xmlHttpRequest
-// @grant       unsafeWindow
 // @version     1
 // ==/UserScript==
 //jshint esversion: 6
@@ -72,7 +71,8 @@ function autofill_mal() {
   function fill_inputs(entry) {
     $("#series_name_light_novels").val(entry.title);
     $("#series2_light_novels").val(entry.title_japanese);
-    $("#tags_light_novels").val();
+    tags = get_tags(entry);
+    $("#tags_light_novels").val(tags);
     $("#year_light_novels").val(entry.published.from.slice(0, 4));
     $("#image_light_novels").val(entry.image_url);
     if (entry.synopsis.substr(0, 23) == "Looking for information") {
@@ -88,12 +88,29 @@ function autofill_mal() {
       return txt.value;
     }
 
+    function get_tags(entry) {
+      aTags = [];
+      for (i = 0; i < entry.genre.length; i++) {
+        genre = entry.genre[i].name;
+
+        if (genre.search(" ")) {
+          genre = genre.replace(" ", ".");
+        }
+
+        aTags.push(genre);
+
+      }
+      strTags = aTags.toString(',');
+      console.log(strTags);
+      return strTags;
+    }
+
   }
 }
 
 $(document).ready(function() {
 
-  $("#light_novels_form .box").prepend(malAutofillHtml);
+  $("#light_novels_form #group_information .box").prepend(malAutofillHtml);
   $("#mal_autofill_button").on("click", autofill_mal);
 
 });
