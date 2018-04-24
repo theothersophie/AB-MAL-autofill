@@ -24,8 +24,12 @@ var malAutofillHtml = `
 function get_myanimelist_id() {
   var e = $("#mal_autofill").val();
   if (!e) {
-    return $('input[id="auto_mal"]:visible').text("Hey! You need to give me some information before I can autofill for you!"),
-      0;
+    $('#auto_mal').css({
+      'color': 'red'
+    });
+    return $('#auto_mal').text("Hey! You need to give me some information before I can autofill for you!"), 0;
+  } else {
+    $("#auto_mal").hide();
   }
   var t = /http[s]?:\/\/myanimelist.net\/(manga|anime)\/([0-9]+)/;
   if (!e.match(t)) {
@@ -37,8 +41,11 @@ function get_myanimelist_id() {
 }
 
 function autofill_mal() {
-  console.log("autofill called");
   id = get_myanimelist_id();
+
+  if (!id) {
+    return;
+  }
   jikan = "https://api.jikan.moe/";
   type = "manga";
   entry = "";
