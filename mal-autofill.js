@@ -77,17 +77,24 @@ function autofill_mal() {
 
 
   function fill_inputs(entry) {
-    $("#series_name_light_novels").val(entry.title);
-    $("#series2_light_novels").val(entry.title_japanese);
+    if (entry.type == "Manga") {
+      type = "_manga";
+    } else if (entry.type == "Novel") {
+      type = "_light_novels";
+    } else {
+      return alert("This entry is not a manga or novel"), 0;
+    }
+    $("#series_name" + type).val(entry.title);
+    $("#series2" + type).val(entry.title_japanese);
     tags = get_tags(entry);
-    $("#tags_light_novels").val(tags);
-    $("#year_light_novels").val(entry.published.from.slice(0, 4));
-    $("#image_light_novels").val(entry.image_url);
+    $("#tags" + type).val(tags);
+    $("#year" + type).val(entry.published.from.slice(0, 4));
+    $("#image" + type).val(entry.image_url);
     if (entry.synopsis.substr(0, 23) == "Looking for information") {
-      $("#desc_light_novels").val('No description.');
+      $("#desc" + type).val('No description.');
     } else {
       synopsis = decodeHtml(entry.synopsis);
-      $("#desc_light_novels").val(synopsis);
+      $("#desc" + type).val(synopsis);
     }
 
     //toggle the Ongoing checkbox
@@ -130,7 +137,7 @@ function autofill_mal() {
 
 $(document).ready(function() {
 
-  $("#light_novels_form #group_information .box").prepend(malAutofillHtml);
+  $("#light_novels_form #group_information .box, #manga_form #group_information .box").prepend(malAutofillHtml);
   $("#mal_autofill_button").on("click", autofill_mal);
 
 });
