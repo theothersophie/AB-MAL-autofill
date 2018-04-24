@@ -83,6 +83,13 @@ function autofill_mal() {
       $("#desc_light_novels").val(synopsis);
     }
 
+    //toggle the Ongoing checkbox
+    if (entry.status == "Publishing") {
+      $('input[name=ongoing]').trigger('click');
+    } else if (entry.status == "Unknown") {
+      alert("Entry status is Unknown");
+    }
+
     function decodeHtml(html) {
       var txt = document.createElement("textarea");
       txt.innerHTML = html;
@@ -96,6 +103,11 @@ function autofill_mal() {
 
         if (genre.search(" ")) {
           genre = genre.replace(" ", ".");
+        }
+
+        //toggle the hentai checkbox
+        if (genre == "Hentai") {
+          $('input[name=hentai]').trigger('click');
         }
 
         aTags.push(genre);
