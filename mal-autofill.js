@@ -21,8 +21,17 @@ var malAutofillHtml = `
 </dd>
 `;
 
+$(document).ready(function() {
+
+  $("#light_novels_form #group_information .box, #manga_form #group_information .box").prepend(malAutofillHtml);
+  $('#light_novels_form #mal_autofill_button, #manga_form #mal_autofill_button').click(function() {
+    autofill_mal();
+  });
+});
+
 function get_myanimelist_id() {
-  var e = $("#mal_autofill").val();
+  var e = $('.ui-tabs-panel[aria-hidden="false"] #mal_autofill').val();
+  console.log(e);
   if (!e) {
     $('#auto_mal').css({
       'color': 'red'
@@ -50,7 +59,6 @@ function autofill_mal() {
   type = "manga";
   entry = "";
 
-  console.log(id);
   request_url = jikan + type + "/" + id;
   console.log(request_url);
 
@@ -70,20 +78,32 @@ function autofill_mal() {
 
       if (response.status == 200) {
         jsonResponse = JSON.parse(response.responseText);
-        fill_inputs(jsonResponse);
+
+        type = "";
+        //get id attribute of visible element with class name that begins with ui-tabs-panel
+        tab = $('div[class^="ui-tabs-panel"]:visible').attr('id');
+        if (jsonResponse.type == "Manga") {
+          type = "_manga";
+          if (tab != "manga") {
+            return alert("MAL says this is a manga. You have selected the incorrect upload form."), 0;
+          }
+        } else if (jsonResponse.type == "Novel") {
+          type = "_light_novels";
+          if (tab != "light_novels") {
+            return alert("MAL says this is a novel. You have selected the incorrect upload form."), 0;
+          }
+        } else {
+          return alert("Error: This entry is not a manga or novel"), 0;
+        }
+
+        fill_inputs(jsonResponse, type);
       }
     }
   });
 
 
-  function fill_inputs(entry) {
-    if (entry.type == "Manga") {
-      type = "_manga";
-    } else if (entry.type == "Novel") {
-      type = "_light_novels";
-    } else {
-      return alert("This entry is not a manga or novel"), 0;
-    }
+  function fill_inputs(entry, type) {
+
     $("#series_name" + type).val(entry.title);
     $("#series2" + type).val(entry.title_japanese);
     tags = get_tags(entry);
@@ -98,10 +118,15 @@ function autofill_mal() {
     }
 
     //toggle the Ongoing checkbox
-    if (entry.status == "Publishing") {
-      $('input[name=ongoing]').trigger('click');
-    } else if (entry.status == "Unknown") {
-      alert("Entry status is Unknown");
+    switch (entry.status) {
+      case "Publishing":
+        $('input[name=ongoing]').trigger('click');
+        break;
+      case "Unknown":
+        alert("Error: Entry status is Unknown");
+        break;
+      case "Finished":
+        break;
     }
 
     function decodeHtml(html) {
@@ -134,10 +159,3 @@ function autofill_mal() {
 
   }
 }
-
-$(document).ready(function() {
-
-  $("#light_novels_form #group_information .box, #manga_form #group_information .box").prepend(malAutofillHtml);
-  $("#mal_autofill_button").on("click", autofill_mal);
-
-});
