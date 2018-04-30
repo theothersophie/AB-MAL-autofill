@@ -45,6 +45,9 @@ function get_myanimelist_id() {
     return alert("Invalid MyAnimeList link."),
       0;
   }
+  if (e.search('\/anime\/') != -1) {
+    return alert('This link is for an anime. MAL Autofill is only for manga or novel links.'), 0;
+  }
   var a = e.match(t)[2];
   return a;
 }
