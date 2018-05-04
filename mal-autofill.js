@@ -5,7 +5,7 @@
 // @include     *animebytes.tv/upload.php*
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant       GM.xmlHttpRequest
-// @version     2018.04.29
+// @version     2018.05.04
 // ==/UserScript==
 //jshint esversion: 6
 
@@ -120,6 +120,22 @@ function autofill_mal() {
       $("#desc" + type).val(synopsis);
     }
 
+    if (type == '_light_novels') {
+      fill_specific_type();
+    }
+
+    function fill_specific_type() {
+      filename = get_filename();
+
+      if (filename.indexOf('epub') !== -1) {
+        $("#specifictype").val("EPUB");
+      } else if (filename.indexOf('pdf') !== -1) {
+        $("#specifictype").val("PDF");
+      } else {
+        $("#specifictype").val("Archived Scans");
+      }
+    }
+
     //toggle the Ongoing checkbox
     switch (entry.status) {
       case "Publishing":
@@ -158,6 +174,19 @@ function autofill_mal() {
       strTags = aTags.toString(',');
       console.log(strTags);
       return strTags;
+    }
+
+    function get_filename() {
+      var fullPath = document.getElementById('file_input' + type).value;
+      if (fullPath) {
+        var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+        var filename = fullPath.substring(startIndex);
+        if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+          filename = filename.substring(1);
+        }
+        return filename;
+
+      }
     }
 
   }
