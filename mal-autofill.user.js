@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name        Sophie's Amazing MAL Autofill
 // @author      theothersophie
-// @namespace   https://github.com/theothersophie/AB-MAL-autofill/blob/master/mal-autofill.js
+// @namespace   https://github.com/theothersophie/AB-MAL-autofill/raw/master/mal-autofill.user.js
+// @downloadURL https://github.com/theothersophie/AB-MAL-autofill/raw/master/mal-autofill.user.js
 // @include     *animebytes.tv/upload.php*
 // @require     https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js
 // @grant       GM.xmlHttpRequest
