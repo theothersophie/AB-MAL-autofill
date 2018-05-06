@@ -120,11 +120,20 @@ function autofill_mal() {
       $("#desc" + type).val(synopsis);
     }
 
-    if (type == '_light_novels') {
+    //toggle the Ongoing checkbox
+    if ((entry.publishing == "true") || (entry.status == "Publishing")) {
+      $('input[name=ongoing]').trigger('click');
+    }
+
+    //Specific Type
+    filename = get_filename();
+
+    if ((type == '_light_novels') && (filename)) {
       fill_specific_type();
     }
 
     function fill_specific_type() {
+      console.log(filename);
       filename = get_filename();
 
       if (filename.indexOf('epub') !== -1) {
@@ -136,17 +145,6 @@ function autofill_mal() {
       }
     }
 
-    //toggle the Ongoing checkbox
-    switch (entry.status) {
-      case "Publishing":
-        $('input[name=ongoing]').trigger('click');
-        break;
-      case "Unknown":
-        alert("Error: Entry status is Unknown");
-        break;
-      case "Finished":
-        break;
-    }
 
     function decodeHtml(html) {
       var txt = document.createElement("textarea");
